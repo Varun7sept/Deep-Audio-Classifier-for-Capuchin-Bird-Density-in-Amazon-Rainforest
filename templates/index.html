@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capuchin Bird Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        .image-container img {
+            width: 300px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .upload-section {
+            margin: 20px;
+            padding: 20px;
+        }
+        .upload-section input, .upload-section button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+        .upload-section input {
+            border: 1px solid #ccc;
+        }
+        .upload-section button {
+            background-color: #008CBA;
+            color: white;
+            cursor: pointer;
+        }
+        .upload-section button:hover {
+            background-color: #005f73;
+        }
+        .result-box {
+            background-color: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Capuchin Bird Detector</div>
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='capuchin1.jpg') }}" alt="Capuchin Bird 1">
+        <img src="{{ url_for('static', filename='capuchin2.jpeg') }}" alt="Capuchin Bird 2">
+        <img src="{{ url_for('static', filename='capuchin3.jpeg') }}" alt="Capuchin Bird 3">
+    </div>
+    <div class="upload-section">
+        <input type="file" id="audioFile" accept="audio/*">
+        <button onclick="uploadAudio()">Upload</button>
+    </div>
+    <div class="result-box" id="result">Detected Capuchin Calls will appear here.</div>
+
+    <script>
+        function uploadAudio() {
+            const fileInput = document.getElementById("audioFile");
+            const resultBox = document.getElementById("result");
+
+            if (fileInput.files.length === 0) {
+                alert("Please select an audio file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("audio", fileInput.files[0]);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultBox.innerText = "Error: " + data.error;
+                } else {
+                    resultBox.innerText = "Capuchin Calls Detected: " + data.capuchin_calls;
+                }
+            })
+            .catch(error => {
+                resultBox.innerText = "Error detecting calls.";
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
